@@ -1,0 +1,70 @@
+[package]
+edition = "2018"
+name = "peer"
+version = "0.1.0"
+license = "MIT"
+description = """
+一款去中心化KV系统
+"""
+
+[[bin]]
+name = "peer-cli"
+path = "src/bin/cli.rs"
+
+[[bin]]
+name = "peer-server"
+path = "src/bin/server.rs"
+
+[workspace]
+resolver = "2"
+members = [ "components/steelkv", "components/p2p"]
+
+[workspace.dependencies]
+byteorder = "1.4.3"
+bincode = "2.0.1"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.117"
+lru = "0.13.0"
+log = "0.4.21"
+thiserror = "2.0.12"
+tokio = { version = "1.44.2", features = ["full"] }
+pretty_env_logger = "0.5"
+hex = "0.4"
+
+[dependencies]
+tokio.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+log.workspace = true
+pretty_env_logger.workspace = true
+hex.workspace = true
+
+async-stream = "0.3.6"
+atoi = "2.0.0"
+bytes = "1.10.1"
+clap = { version = "4.5.35", features = ["derive"] }
+tokio-stream = "0.1.17"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+mineral = { path = "components/steelkv" }
+p2p = { path="components/p2p" }
+k256 = { version = "0.13.4", features = ["ecdsa"] }
+
+byteorder = "1.5.0"
+bincode = "2.0.1"
+toml = "0.8.20"
+tiny-keccak = { version = "2.0.2", features = ["keccak"] }
+prost = "0.13.5"
+rand = "0.9.0"
+rocksdb = "0.23.0"
+
+[dev-dependencies]
+# Enable test-utilities in dev mode only. This is mostly for tests.
+tokio = { version = "1", features = ["test-util"] }
+criterion = "0.5.1"
+rand = { version = "0.9.0-alpha.1" }
+hex-literal = "1.0.0"
+
+[build-dependencies]
+prost-build = "0.13.5"
