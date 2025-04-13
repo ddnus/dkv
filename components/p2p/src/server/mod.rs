@@ -8,7 +8,7 @@ use std::{collections::HashMap, time::Duration};
 pub use event::*;
 use cmd::Command;
 use libp2p::{
-    futures::StreamExt, noise, request_response::OutboundRequestId, tcp, yamux, Multiaddr, PeerId, Swarm
+    futures::StreamExt, kad::{QueryId, QueryResult}, noise, request_response::OutboundRequestId, tcp, yamux, Multiaddr, PeerId, Swarm
 };
 use log::info;
 use tokio::{select, sync::{mpsc::{self, UnboundedReceiver}, oneshot, OnceCell}, time::{self, Interval}};
@@ -46,6 +46,8 @@ pub struct Server<E: EventHandler> {
     pubsub_topics: Vec<String>,
 
     pending_outbound_requests: HashMap<OutboundRequestId, oneshot::Sender<ResponseType>>,
+
+    p2p_query_requests: HashMap<QueryId, oneshot::Sender<QueryResult>>
 }
 
 impl <E: EventHandler> Server<E> {
@@ -101,6 +103,7 @@ impl <E: EventHandler> Server<E> {
             pubsub_topics,
             listened_addresses: Vec::new(),
             pending_outbound_requests: HashMap::new(),
+            p2p_query_requests: HashMap::new(),
         })
     }
 

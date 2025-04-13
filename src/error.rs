@@ -40,6 +40,9 @@ pub enum Error {
 
     #[error(transparent)]
     KVDbFailure(#[from] rocksdb::Error),
+
+    #[error("Space authorization error:{0}")]
+    SpaceAuthorization(String)
 }
 
 impl From<P2pError> for Error {

@@ -79,8 +79,7 @@ impl BehaviourBuilder {
 
         let protocols = iter::once((GenericProtocol, ProtocolSupport::Full));
 
-        let mut cfg = request_response::Config::default();
-        cfg.set_request_timeout(self.request_timeout);
+        let cfg = request_response::Config::default().with_request_timeout(self.request_timeout);
 
         Behaviour::with_codec(codec, protocols, cfg)
     }

@@ -1,15 +1,12 @@
-mod space;
-use space::Space;
 
-use std::{ops::Deref, sync::Arc, time::Duration};
-
-mod kv;
-mod node;
+use std::{ops::Deref, sync::Arc, time::{Duration, SystemTime}};
 
 use bytes::Bytes;
-use p2p::PeerIdWithMultiaddr;
+use p2p::Peer;
 
-use crate::{db::{Db, DbDropGuard}, P2pClient};
+mod account;
+
+use crate::{db::{Db, DbDropGuard}, error::Error, P2pClient};
 
 #[derive(Debug, Clone)]
 pub struct Node {
@@ -20,11 +17,13 @@ impl Node {
     pub fn new(
         db_holder: DbDropGuard,
         p2p: P2pClient,
+        peer: Peer,
     ) -> Self {
         Self {
             inner: Arc::new(NodeInner {
                 db_holder,
                 p2p,
+                peer,
             }),
         }
     }
@@ -44,9 +43,11 @@ pub struct NodeInner {
     db_holder: DbDropGuard,
 
     p2p: P2pClient,
+    peer: Peer,
 }
 
 impl Node {
+
     pub fn db(&self) -> Db {
         self.db_holder.db()
     }
@@ -57,19 +58,43 @@ impl Node {
 
     pub(crate) fn set(&self, key: Bytes, value: Bytes, expire: Option<Duration>) {
         self.db().set(key, value, expire)
+        // 同步到其他节点
     }
 
     // pub fn next_account_nonce(&self, account: &str) -> u64 {
     //     self.state.next_account_nonce(account)
     // }
 
-    pub async fn peer_basic(&self) -> Option<Vec<String>> {
-        let known_peers = self.p2p.get_known_peers().await;
-        if known_peers.len() > 0 {
-            Some(known_peers)
-        } else {
-            None
-        }
+    // 注册帐号
+    pub async fn register_identity(&self, identity: Vec<u8>) -> Result<Vec<u8>, Error> {
+        // 获取离帐号最近的一批节点
+        let peers = self.p2p.get_closet_peer(self.peer.id.to_bytes()).await?;
+        // 依此检测是否已经注册该帐号的space0
+        
+        // 如果不存在，取最近的n个节点
+
+        // 初始化帐号信息
+        // 依此初始化space信息，返回写入成功信息
+        // 
+        Ok(Vec::new())
     }
+
+    pub async fn login_identity(&self, identity: Vec<u8>) {
+        // 获取离帐号最近的一批节点
+        // 依此获取帐号最新版本的系统空间
+    }
+
+    // 申请空间
+    pub async fn apply_space(&self, identity: Vec<u8>) {
+        // 获取离帐号最近的一批节点
+        // 依此获取帐号最新版本的系统空间
+        
+        // 判断新空间spaceX是否存在
+        // 如果不存在，取离空间最近的n个节点
+        // 依此写入space信息，返回写入成功信息
+    }
+    // 
+
+    
 
 }

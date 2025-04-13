@@ -68,3 +68,22 @@ message BlocksReq {
 message BlocksResp {
 	repeated Block blocks = 1;
 }
+
+enum DataBlockAction {
+	SET = 0;
+	UPDATE = 1;
+	DELETE = 2;
+}
+
+message DataBlockReq {
+	uint64 verson = 1;
+	bytes identity = 2;
+	string space = 3;
+	DataBlockAction acton = 4;
+	bytes key = 5;
+	bytes value = 6;
+}
+
+message DataBlockResp {
+	// uint64 
+}

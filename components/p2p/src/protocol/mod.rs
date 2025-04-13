@@ -14,6 +14,7 @@ use libp2p::{
 };
 
 use log::debug;
+use crate::Peer;
 use crate::{config::ReqRespConfig, error::P2pError};
 
 use std::collections::{hash_map::DefaultHasher, HashMap};
@@ -75,7 +76,7 @@ impl Behaviour {
     }
 
     pub fn discover_peers(&mut self) {
-        if self.known_peers().is_empty() {
+        if self.is_unknown_peers() {
             debug!("☕ Discovery process paused due to no boot node");
         } else {
             debug!("☕ Starting a discovery process");
@@ -83,15 +84,29 @@ impl Behaviour {
         }
     }
 
-    pub fn known_peers(&mut self) -> HashMap<PeerId, Vec<Multiaddr>> {
+    pub fn is_unknown_peers(&mut self) -> bool {
+        for b in self.kad.kbuckets() {
+            for e in b.iter() {
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn known_peers(&mut self) -> HashMap<PeerId, Peer> {
         let mut peers = HashMap::new();
         for b in self.kad.kbuckets() {
             for e in b.iter() {
-                peers.insert(*e.node.key.preimage(), e.node.value.clone().into_vec());
+                peers.insert(*e.node.key.preimage(), 
+                    Peer::new(*e.node.key.preimage(), e.node.value.clone().into_vec()));
             }
         }
 
         peers
+    }
+
+    pub fn get_closest_peers(&mut self, key: Vec<u8>) -> QueryId {
+        self.kad.get_closest_peers(key)
     }
 
     pub fn closest_id_peers(&mut self, key: String, limit: u8) -> Vec<(PeerId, Vec<Multiaddr>, KBucketDistance)> {

@@ -1,5 +1,5 @@
 use log::info;
-use p2p::{service::{self, EventHandler}, Client, PeerIdWithMultiaddr};
+use p2p::{EventHandler, Client, PeerIdWithMultiaddr};
 
 use clap::Parser;
 use p2p::P2pConfig;
@@ -31,7 +31,7 @@ async fn main() {
 
     // Periodically print the node status.
     let client_clone = client.clone();
-    thread::spawn(move || get_node_status(client_clone));
+    thread::spawn(move || get_peer(client_clone));
 
     // Periodically send a request to one of the known peers.
     let client_clone = client.clone();
@@ -62,11 +62,11 @@ impl EventHandler for Handler {
     }
 }
 
-async fn get_node_status(client: Client) {
+async fn get_peer(client: Client) {
     let dur = Duration::from_secs(7);
     loop {
         thread::sleep(dur);
-        let node_status = client.get_node_status().await;
+        let node_status = client.get_peer().await;
         info!("📣 Node status: {:?}", node_status);
     }
 }
@@ -75,13 +75,13 @@ async fn request(client: Client) {
     let dur = Duration::from_secs(11);
     loop {
         thread::sleep(dur);
-        let known_peers = client.get_known_peers().await;
+        let known_peers = client.get_closet_peer(Vec::new()).await.unwrap();
         if known_peers.len() > 0 {
             let target = &known_peers[0];
             let request = "Hello, request!";
             info!("📣 >>>> Outbound request: {:?}", request);
             let response = client
-                .blocking_request(target, request.as_bytes().to_vec())
+                .blocking_request(target.clone(), request.as_bytes().to_vec())
                 .unwrap();
             info!(
                 "📣 <<<< Inbound response: {:?}",

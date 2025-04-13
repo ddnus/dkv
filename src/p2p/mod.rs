@@ -3,7 +3,7 @@ mod event;
 
 pub use client::P2pClient;
 pub use event::EventHandlerImpl;
-use p2p::{config::P2pConfig, service::Server};
+use p2p::{config::P2pConfig, Server};
 
 use crate::error::Error;
 

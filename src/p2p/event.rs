@@ -1,7 +1,7 @@
 use std::{convert::TryFrom, ops::Deref, sync::Arc};
 
 use log::{info, error};
-use p2p::{service::EventHandler, P2pError};
+use p2p::{EventHandler, P2pError};
 
 use crate::{node::Node};
 

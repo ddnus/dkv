@@ -54,6 +54,8 @@ use shutdown::Shutdown;
 mod error;
 use error::Error;
 
+mod space;
+
 mod p2p;
 pub use p2p::P2pClient;
 
@@ -67,3 +69,5 @@ mod utils;
 pub const DEFAULT_PORT: u16 = 6380;
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+pub mod auth;

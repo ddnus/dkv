@@ -27,8 +27,9 @@ impl Deref for P2pClient {
 
 impl P2pClient {
     async fn known_peers(&self) -> Vec<String> {
-        let peers = self.get_known_peers().await;
+        let peers = self.known_peers().await;
         info!("📣 Known peers {:?}", peers);
         peers
     }
+
 }

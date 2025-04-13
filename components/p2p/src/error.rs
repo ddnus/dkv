@@ -25,4 +25,10 @@ pub enum P2pError {
     SubscribeError(#[from] gossipsub::SubscriptionError),
     #[error(transparent)]
     PublishError(#[from] gossipsub::PublishError),
+    #[error("Query finished with no closest peers.")]
+    EmptyClosestPeers,
+    #[error("Query for closest peers timed out.")]
+    QueryClosestPeersTimeout,
+    #[error("Unknown query closest peers result.")]
+    UnknownQueryClosestPeersResult,
 }

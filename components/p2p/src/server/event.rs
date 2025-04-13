@@ -13,6 +13,7 @@ use libp2p::{
     identify,
     ping,
     gossipsub,
+    kad,
 };
 
 use std::io;
@@ -111,6 +112,41 @@ impl <E: EventHandler> Server<E> {
                 message_id: _,
                 message,
             }) => self.handle_inbound_broadcast(message),
+
+            BehaviourEvent::Kad(kad::Event::OutboundQueryProgressed {
+                result,
+                id,
+                ..
+            }) => {
+                if let Some(responder) = self.p2p_query_requests.remove(&id) {
+                    let _ = responder.send(result);
+                } else {
+                    warn!("❗ Received failure for unknown request: {}", id);
+                    debug_assert!(false);
+                }
+            }
+
+            // BehaviourEvent::Kad(kad::Event::OutboundQueryProgressed {
+            //     result: kad::QueryResult::GetClosestPeers(Ok(ok)),
+            //     id,
+            //     ..
+            // }) => {
+            //     if ok.peers.is_empty() {
+            //         error!("Query finished with no closest peers.")
+            //     }
+            //     info!("Query finished with closest peers: {:#?}", ok.peers);
+            // }
+
+            // BehaviourEvent::Kad(kad::Event::OutboundQueryProgressed {
+            //     id,
+            //     result:
+            //         kad::QueryResult::GetClosestPeers(Err(kad::GetClosestPeersError::Timeout {
+            //             ..
+            //         })),
+            //     ..
+            // }) => {
+            //     error!("Query for closest peers timed out")
+            // }
 
             _ => {}
         }

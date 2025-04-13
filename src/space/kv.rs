@@ -7,6 +7,7 @@ pub struct KV {
 }
 
 impl KV {
+    /// 创建一个新的 KV 数据库
     pub fn new(path: &PathBuf) -> Result<Self, Error> {
         let mut opts = Options::default();
         opts.create_if_missing(true);
