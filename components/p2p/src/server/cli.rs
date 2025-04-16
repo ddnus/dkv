@@ -67,6 +67,12 @@ impl Client {
     }
 
     // pub async fn sync_datablock(&self, )
+    pub async fn get_account(&self, name: Vec<u8>) -> Result<Vec<u8>, P2pError> {
+        let (responder, receiver) = oneshot::channel();
+        self.cmd_sender.send(Command::GetAccount { name, responder });
+        let account = receiver.await;
+        account.map_err(|_| P2pError::InvalidPeerId)
+    }
 
 }
 

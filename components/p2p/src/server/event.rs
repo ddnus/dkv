@@ -240,4 +240,8 @@ impl <E: EventHandler> Server<E> {
             }
         }
     }
+
+    fn get_account(&self, name: Vec<u8>) -> Vec<u8> {
+        self.swarm.behaviour_mut().get_account(name)
+    }
 }

@@ -28,6 +28,10 @@ pub enum Command {
     },
     GetStatus(oneshot::Sender<Peer>),
     // GetClosestPeers()
+    GetAccount{
+        name: Vec<u8>,
+        responder: oneshot::Sender<Vec<u8>>,
+    },
 }
 
 impl <E: EventHandler> Server<E> {
@@ -45,6 +49,7 @@ impl <E: EventHandler> Server<E> {
             // },
             Command::GetClosestPeers { key, responder } => self.handle_get_closest_peers(key, responder),
             Command::GetKnownPeers { responder } => self.handle_get_known_peers(responder),
+            Command::GetAccount {name, responder } => self.handle_get_account()
             _ => {
                 println!("=============unknown command===========");
             },
@@ -98,6 +103,11 @@ impl <E: EventHandler> Server<E> {
             peer_list.push(peer);
         }
         let _ = responder.send(peer_list);
+    }
+
+    fn handle_get_account(&mut self, name: Vec<u8>, responder: oneshot::Sender<Vec<u8>>) {
+        let account = self.swarm.behaviour_mut().get_account(name);
+        let _ = responder.send(account);
     }
     
 }

@@ -34,14 +34,14 @@ message Tx {
 
 // Request/response methods.
 enum Method {
-	HEIGHT = 0;
+	GET_ACCOUNT = 0;
 	BLOCKS = 1;
 }
 
 message Request {
 	Method method = 1;
 	oneof body {
-		BlockHeightReq block_height_req = 2;
+		GetAccountReq get_account_req = 2;
 		BlocksReq blocks_req = 3;
 	}
 }
@@ -49,15 +49,17 @@ message Request {
 message Response {
 	Method method = 1;
 	oneof body {
-		BlockHeightResp block_height_resp = 2;
+		GetAccountResp get_account_resp = 2;
 		BlocksResp blocks_resp = 3;
 	}
 }
 
-message BlockHeightReq {}
+message GetAccountReq {
+	string account_name = 1;
+}
 
-message BlockHeightResp {
-	uint64 block_height = 1;
+message GetAccountResp {
+	// uint64  = 1;
 }
 
 message BlocksReq {

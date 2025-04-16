@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 use prost::Message;
 
 use crate::error::Error;
@@ -5,42 +7,26 @@ use crate::error::Error;
 use super::*;
 
 impl Request {
-    /// Build a new request to get the block height.
-    pub fn new_block_height_req() -> Self {
+    /// Build a new request to get the account.
+    pub fn new_account_req(account_name: Vec<u8>) -> Self {
         Self {
-            method: Method::Height as i32,
-            body: Some(request::Body::BlockHeightReq(BlockHeightReq {})),
-        }
-    }
-
-    /// Build a new request to get blocks from the given number.
-    pub fn new_blocks_req(from_number: u64) -> Self {
-        Self {
-            method: Method::Blocks as i32,
-            body: Some(request::Body::BlocksReq(BlocksReq { from_number })),
+            method: Method::GetAccount as i32,
+            body: Some(request::Body::GetAccountReq(GetAccountReq { account_name } )),
         }
     }
 }
 
 impl Response {
-    /// Build a new response to get the block height.
-    pub fn new_block_height_resp(block_height: u64) -> Self {
+    /// Build a new response to get the account info.
+    pub fn new_get_account_resp(block_height: u64) -> Self {
         Self {
-            method: Method::Height as i32,
-            body: Some(response::Body::BlockHeightResp(BlockHeightResp {
-                block_height,
+            method: Method::GetAccount as i32,
+            body: Some(response::Body::GetAccountResp(GetAccountResp {
             })),
         }
     }
-
-    /// Build a new response to get blocks.
-    pub fn new_blocks_resp(blocks: Vec<Block>) -> Self {
-        Self {
-            method: Method::Blocks as i32,
-            body: Some(response::Body::BlocksResp(BlocksResp { blocks })),
-        }
-    }
 }
+
 
 impl TryFrom<Vec<u8>> for Request {
     type Error = Error;
@@ -70,11 +56,11 @@ impl From<Response> for Vec<u8> {
     }
 }
 
-impl From<Response> for BlockHeightResp {
+impl From<Response> for GetAccountResp {
     fn from(value: Response) -> Self {
         match value.body.unwrap() {
-            response::Body::BlockHeightResp(resp) => resp,
-            _ => BlockHeightResp { block_height: 0 },
+            response::Body::GetAccountResp(resp) => resp,
+            _ => GetAccountResp {  },
         }
     }
 }

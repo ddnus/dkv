@@ -43,7 +43,7 @@ pub struct Tx {
     #[prost(uint64, tag = "7")]
     pub timestamp: u64,
 }
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Request {
     #[prost(enumeration = "Method", tag = "1")]
     pub method: i32,
@@ -52,10 +52,10 @@ pub struct Request {
 }
 /// Nested message and enum types in `Request`.
 pub mod request {
-    #[derive(Clone, Copy, PartialEq, ::prost::Oneof)]
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Body {
         #[prost(message, tag = "2")]
-        BlockHeightReq(super::BlockHeightReq),
+        GetAccountReq(super::GetAccountReq),
         #[prost(message, tag = "3")]
         BlocksReq(super::BlocksReq),
     }
@@ -72,18 +72,19 @@ pub mod response {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Body {
         #[prost(message, tag = "2")]
-        BlockHeightResp(super::BlockHeightResp),
+        GetAccountResp(super::GetAccountResp),
         #[prost(message, tag = "3")]
         BlocksResp(super::BlocksResp),
     }
 }
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct BlockHeightReq {}
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct BlockHeightResp {
-    #[prost(uint64, tag = "1")]
-    pub block_height: u64,
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetAccountReq {
+    #[prost(string, tag = "1")]
+    pub account_name: ::prost::alloc::string::String,
 }
+/// uint64  = 1;
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct GetAccountResp {}
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct BlocksReq {
     /// Start with given block number.
@@ -117,7 +118,7 @@ pub struct DataBlockResp {}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Method {
-    Height = 0,
+    GetAccount = 0,
     Blocks = 1,
 }
 impl Method {
@@ -127,14 +128,14 @@ impl Method {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            Self::Height => "HEIGHT",
+            Self::GetAccount => "GET_ACCOUNT",
             Self::Blocks => "BLOCKS",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
-            "HEIGHT" => Some(Self::Height),
+            "GET_ACCOUNT" => Some(Self::GetAccount),
             "BLOCKS" => Some(Self::Blocks),
             _ => None,
         }
